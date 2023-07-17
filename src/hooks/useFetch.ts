@@ -31,7 +31,7 @@ type TripData = Array<TripDatum>;
 const tripData: TripData = [
   {
     id: "1a",
-    tripName: "Chewie's Flight School",
+    tripName: "Ripley's Flight School",
     description:
       "There's a whole bunch of theory to learn, sure; with the advent of crystallic fusion, the hardest part is learning how to relax and unwind while the technology does everything for you. Grab your favourite camomile and learn to slow down really, really fast.",
     cost: 75000,
@@ -55,7 +55,7 @@ const tripData: TripData = [
     id: "3a",
     tripName: "Intergalactic Ultra Re-style Glow-Up Experience",
     description:
-      "When you hear the word 'style', what do you think of? New York? Paris? Milan? \n The truth is out there, and accompanying it is impeccable style. Go get yourself an ice-cream coiffure to make Pyramid Head blush. FULLY BOOKED.",
+      "When you hear the word 'style', what do you think of? New York? Paris? Milan? \n The truth is out there, and accompanying it is impeccable style. Go get yourself an ice-cream coiffure to make Pyramid Head blush.",
     cost: 250000,
     lengthInDays: 2,
     imageUrl:
