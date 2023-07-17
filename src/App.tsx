@@ -1,54 +1,131 @@
 import { useEffect, useState } from "react";
 import { useFetch } from "./hooks/useFetch";
+import { useHero } from "./hooks/useHero";
+import { v4 as uuid } from "uuid";
 import "./App.css";
 
 function App() {
   const [trips, setTrips] = useState(0);
+  const [nav, setNav] = useState<string[]>([]);
+  const [boughtIt, setBoughtIt] = useState(false);
   const { data, isLoading, error } = useFetch();
+  const { heroics, waitAMo, fail } = useHero();
 
   useEffect(() => {
-    if (data) setTrips(data.length);
-  }, [data]);
+    setNav(() => {
+      return ["trending", "your orders", "community"];
+    });
+    if (heroics) if (data) setTrips(data.length);
+  }, [data, heroics]);
 
-  // TODO: breadcrumb with React links
-  // TODO: style li
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setBoughtIt(true);
+    if (e.currentTarget.value) {
+      const stuff = e.currentTarget.value.split("/");
+      const experience = stuff[0];
+      const cost = parseInt(stuff[1]);
+      alert(
+        `Okie dokie, so you've bought the '${experience}' excursion, at a cost of ${
+          cost &&
+          cost.toLocaleString("en-GB", { style: "currency", currency: "GBP" })
+        }\rNice one 🚀`
+      );
+    }
+  };
+
+  const renderReviewScore = (score: number) => {
+    const scoreRepresentationUsingACuteLilPlanetEmoji = [];
+    for (let i = 0; i < score; i++) {
+      scoreRepresentationUsingACuteLilPlanetEmoji.push(
+        <span key={uuid()}>🪐</span>
+      );
+    }
+    return scoreRepresentationUsingACuteLilPlanetEmoji;
+  };
 
   return (
     <>
-      <div className="header">
-        <img className="logo" src="/icons8-space-64.png" alt="spaceship logo" />
-        <h1>Extraterrestrial Excursions for Earthlings</h1>
-        <ul>
-          <li>
-            <a>trending</a>
-          </li>
-          <li>
-            <a>your orders</a>
-          </li>
-          <li>
-            <a>community</a>
-          </li>
+      <header className="site-header">
+        <div className="site-identity">
+          <a>
+            <img
+              className="eefe-logo"
+              src="/icons8-space-64.png"
+              alt="eefe spaceship logo"
+            />
+          </a>
+          <h1>Extraterrestrial Excursions for Earthlings</h1>
+        </div>
+        <ul className="go-somewhere">
+          {nav.map((place) => {
+            return (
+              <li key={place}>
+                <a>{place}</a>
+              </li>
+            );
+          })}
         </ul>
-      </div>
+      </header>
+
+      {waitAMo && <p>...getting heroics...</p>}
+      {heroics && (
+        <div
+          className="hero-section"
+          style={{
+            background: `linear-gradient(0deg, rgba(10 10 10 / 90%), rgba(25 119 25 / 60%)), url(${heroics.image})`,
+            backgroundSize: "cover",
+            backgroundPosition: "50% 20%",
+          }}
+        >
+          <h3>We've been helping humanity traverse the universe for eons.</h3>
+          <p>
+            Now it's your turn; but don't just take our word for it. Check out
+            these smashing reviews from customers just like you!
+          </p>
+          <ul className="testimonials">
+            {heroics.testimonials.map(({ name, rating, spiel, social }) => {
+              return (
+                <li key={name} className="test-card">
+                  <h4>{name}</h4>
+                  <a>{social}</a>
+                  <p>{spiel}</p>
+                  <p>Score / 5: {renderReviewScore(rating)}</p>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
       {isLoading && <h2>Loading...</h2>}
       {data && (
         <div className="trips">
-          <h2>We found {trips} trips for you!</h2>
+          <h3>We found {trips} trips for you!</h3>{" "}
           <ul className="trip-list">
             {data.map(
-              ({ id, tripName, description, imageUrl, cost, lengthInDays }) => {
+              ({
+                id,
+                tripName,
+                description,
+                imageUrl,
+                cost,
+                lengthInDays,
+                isBookable,
+              }) => {
                 return (
                   <li key={id} className="trip-card">
-                    <h3 className="grid-col-span-2">{tripName}</h3>
-                    <p className="grid-col-span-2">{description}</p>
+                    <h3 className="trip-name grid-col-span-2">{tripName}</h3>
+                    <p className="trip-description grid-col-span-2">
+                      {description}
+                    </p>
                     <img
                       className="trip-thumbnail"
                       src={imageUrl}
                       alt={`representation of ${tripName}`}
                     />
                     <p className="trip-duration">
-                      Duration: {lengthInDays} days
+                      Duration: {lengthInDays} day
+                      {lengthInDays > 1 && "s"}
                     </p>
                     <p className="trip-price">
                       Price:{" "}
@@ -57,8 +134,13 @@ function App() {
                         currency: "GBP",
                       })}
                     </p>
-                    <button className="grid-col-span-2 trip-book-button">
-                      book
+                    <button
+                      className="grid-col-span-2 trip-book-button"
+                      disabled={!isBookable}
+                      onClick={handleClick}
+                      value={`${tripName}/${cost}`}
+                    >
+                      {isBookable ? "book now" : "fully booked"}
                     </button>
                   </li>
                 );
