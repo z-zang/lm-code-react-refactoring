@@ -77,9 +77,9 @@ function App() {
             backgroundPosition: "50% 20%",
           }}
         >
-          <h3>We've been helping humanity traverse the universe for eons.</h3>
+          <h3>We've been helping humanity traverse the universe for aeons.</h3>
           <p>
-            Now it's your turn; but don't just take our word for it. Check out
+            Now it's your turn to marvel at the wonders of the universe! But don't just take our word for it; check out
             these smashing reviews from customers just like you!
           </p>
           <ul className="testimonials">
